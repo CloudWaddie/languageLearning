@@ -33,7 +33,7 @@
 .learn-page { max-width: 620px; margin: 0 auto; padding: 36px 24px 60px; }
 .unit-section { margin-bottom: 44px; }
 .unit-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; padding: 18px 22px; border-radius: 16px; }
-.unit-banner h2 { margin: 5px 0 5px; font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; letter-spacing: -.4px; }
+.unit-banner h2 { margin: 5px 0 5px; font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -.4px; }
 .unit-banner p { font-size: 11px; opacity: .82; }
 .unit-banner .overline { opacity: .75; }
 .unit-banner.sage { color: #fff; background: linear-gradient(135deg, #5f9a6e, #41775a); }
@@ -61,7 +61,7 @@
 .path-node.locked ~ .path-node-label { opacity: .55; }
 .path-end { display: grid; place-items: center; padding-top: 8px; }
 .path-end-card { display: grid; gap: 4px; padding: 18px 24px; border: 1px dashed #c4d6c7; border-radius: 14px; text-align: center; }
-.path-end-card strong { color: var(--green-deep); font-family: 'Fraunces', serif; font-size: 17px; }
+.path-end-card strong { color: var(--green-deep); font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: 17px; }
 .path-end-card span { color: var(--muted); font-size: 11px; }
 
 /* ---------- Lesson session ---------- */
@@ -78,7 +78,7 @@
 .exercise-heading { margin-bottom: 26px; }
 .exercise-label { color: #9aa79f; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; }
 .exercise-prompt-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-.exercise-prompt { color: var(--ink); font-family: 'Fraunces', serif; font-size: clamp(21px, 3vw, 28px); font-weight: 500; letter-spacing: -.5px; }
+.exercise-prompt { color: var(--ink); font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: clamp(21px, 3vw, 28px); font-weight: 500; letter-spacing: -.5px; }
 .speak-prompt { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border: 1px solid #dcebdc; border-radius: 12px; color: var(--green); background: #eef6ee; }
 .speak-prompt:hover { background: #e0efe0; }
 
@@ -152,7 +152,7 @@
 .end-stat-icon.xp { color: #b28540; background: #fff2ce; }
 .end-stat-icon.acc { color: #5f9670; background: #e4f2e5; }
 .end-stat-icon.hearts { color: #d76a55; background: #fbe7e1; }
-.end-stats strong { color: var(--ink); font-family: 'Fraunces', serif; font-size: 17px; }
+.end-stats strong { color: var(--ink); font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: 17px; }
 .end-stats small { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .6px; }
 .end-action { min-width: 200px; justify-content: center; padding: 13px 30px; font-size: 13px; }
 .end-actions-row { display: flex; gap: 10px; margin-top: 20px; }
@@ -165,7 +165,7 @@
 
 /* ---------- Misc ---------- */
 .empty-state { display: grid; justify-items: center; gap: 8px; padding: 46px 20px; text-align: center; }
-.empty-state h3 { color: var(--ink); font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; }
+.empty-state h3 { color: var(--ink); font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: 22px; font-weight: 500; }
 .empty-state p { color: var(--muted); font-size: 12px; }
 .empty-state .primary-action { margin-top: 14px; }
 .subtle-action.danger { color: #b35d49; }

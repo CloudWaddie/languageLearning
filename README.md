@@ -1,19 +1,18 @@
-# Lingua Studio
+# lingua
 
-Lingua Studio is a playful, Italian-first, conversation-first language learning workspace. The current experience puts a learner into an Italian café scene with Luna, a warm AI coach that responds naturally, notices high-value patterns, explains concepts in context, and shapes the next prompt around what the learner just said.
+lingua is a playful, no-login language learning app — a Duolingo-style experience that runs entirely in your browser. Pick a course, work through bite-size lessons on a guided path, and let hearts, XP, streaks and a word garden keep the habit alive. There is no account and no sign-in: all progress is saved in `localStorage` on the device.
 
 ## Included
 
-- Freeform conversational practice with a live session feel
-- Adaptive corrections and contextual grammar explanations
-- Progress, daily goal, streak, and focus-word panels
-- A full learning path with scene-based lessons and completion states
-- A searchable Word Garden with saved words and quick recall practice
-- Activity charts, milestones, confidence trends, and weekly stats
-- A focused Italian track with Italian café scenes and useful everyday phrases
-- Browser text-to-speech for coach messages
-- Demo replies when the AI route is not configured, so the interface remains explorable
-- A server-side `/api/chat` route compatible with OpenAI-style `/chat/completions` APIs
+- Three courses — Italian, Spanish and French — each with 3 units × 3 lessons (~7 exercises per lesson)
+- A Duolingo-style learn path: lessons unlock in order and completed nodes turn gold
+- Five exercise types: pick-the-translation, word-bank phrase building, type-it-out, match-the-pairs and listen-and-choose (browser text-to-speech)
+- Lesson sessions with hearts, a progress bar, instant feedback, re-queued missed exercises and an XP results screen
+- XP, a 40 XP daily goal, day streaks and first-try accuracy — all persisted locally
+- A Word garden that collects every word from completed lessons, with starring, pronunciation and a quick recall quiz
+- A Free talk view with Luna, an adaptive AI conversation coach per course
+- A server-side `/api/chat` route compatible with OpenAI-style `/chat/completions` APIs (optional; Free talk falls back to demo replies offline)
+- No login, ever — progress lives on this device only
 
 ## Local preview
 
@@ -24,13 +23,13 @@ bun run dev
 
 The preview server binds to `0.0.0.0` and reads the managed `PORT` value when present.
 
-## AI setup
+## AI setup (optional)
 
 Add these values through the workspace Keys/API keys UI (do not put secrets in client-side `VITE_*` variables):
 
-- `OPENAI_API_KEY` — required for live AI coaching
+- `OPENAI_API_KEY` — required for live AI coaching in Free talk
 - `OPENAI_BASE_URL` — optional; defaults to `https://api.openai.com/v1`, and can point to another OpenAI-compatible provider
-- `OPENAI_MODEL` — optional; defaults to `gpt-4o-mini`. The prompt is tuned for playful, adaptive Italian practice.
+- `OPENAI_MODEL` — optional; defaults to `gpt-4o-mini`
 
 The browser only calls `/api/chat`; the API key is read by `server/index.ts` and is never sent to the browser. Without `OPENAI_API_KEY`, chat falls back to a small local demo response so the UI can still be reviewed.
 

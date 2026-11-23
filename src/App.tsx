@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Brain, Check, ChevronDown, Flame, Map as MapIcon, MessageCircle, Sparkles, Target, Trophy } from "lucide-react";
-import { Lesson, courses, findLesson, getCourse } from "./data/courses";
+import { Course, Lesson, courses, getCourse } from "./data/courses";
 import { DAILY_GOAL_XP, streakDays, todayXp, useProgress } from "./state/progress";
 import { LearnView } from "./views/LearnView";
 import { LessonSession } from "./views/LessonSession";
@@ -13,7 +13,7 @@ type View = "Learn" | "Words" | "Talk" | "Stats";
 function App() {
   const { store, selectCourse, completeLesson, toggleWord, resetProgress } = useProgress();
   const [view, setView] = useState<View>("Learn");
-  const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+  const [activeSession, setActiveSession] = useState<{ course: Course; lesson: Lesson } | null>(null);
   const [showCourseMenu, setShowCourseMenu] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
 
@@ -22,20 +22,21 @@ function App() {
   }
 
   const course = getCourse(store.courseId);
-  const activeLesson = activeLessonId ? findLesson(course, activeLessonId) : undefined;
   const streak = streakDays(store);
   const xpToday = todayXp(store);
 
   function startLesson(lesson: Lesson) {
-    setActiveLessonId(lesson.id);
+    // Pin the course to the lesson so a remote course switch (storage sync)
+    // can't yank the session out from under an active lesson.
+    setActiveSession({ course, lesson });
   }
 
   function recordLesson(xp: number, correct: number, total: number) {
-    if (activeLesson) completeLesson(course.id, activeLesson.id, xp, correct, total);
+    if (activeSession) completeLesson(activeSession.course.id, activeSession.lesson.id, xp, correct, total);
   }
 
   function exitLesson() {
-    setActiveLessonId(null);
+    setActiveSession(null);
     setView("Learn");
   }
 
@@ -45,12 +46,12 @@ function App() {
     setView("Learn");
   }
 
-  if (activeLesson) {
+  if (activeSession) {
     return (
       <LessonSession
-        key={activeLesson.id}
-        course={course}
-        lesson={activeLesson}
+        key={`${activeSession.course.id}:${activeSession.lesson.id}`}
+        course={activeSession.course}
+        lesson={activeSession.lesson}
         onExit={exitLesson}
         onFinished={recordLesson}
       />

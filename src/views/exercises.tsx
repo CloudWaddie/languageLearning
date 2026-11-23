@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Volume2 } from "lucide-react";
 import type { BankExercise, Exercise, ListenExercise, MatchExercise, SelectExercise, TypeExercise } from "../data/courses";
 import { speak } from "../lib/speech";
@@ -195,6 +195,15 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
   const [matched, setMatched] = useState<string[]>([]);
   const [flash, setFlash] = useState<"wrong" | null>(null);
 
+  // Parent callbacks get new identities every render (heart loss re-renders the
+  // lesson); read them through refs so they never re-run or cancel the reset effect.
+  const onMistakeRef = useRef(onMistake);
+  const onSolvedRef = useRef(onSolved);
+  useEffect(() => {
+    onMistakeRef.current = onMistake;
+    onSolvedRef.current = onSolved;
+  });
+
   useEffect(() => {
     if (pickedLeft && pickedRight && !flash) {
       const isMatch = exercise.pairs.some(([target, base]) => target === pickedLeft && base === pickedRight);
@@ -204,11 +213,11 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
         setPickedLeft(null);
         setPickedRight(null);
         if (next.length === exercise.pairs.length) {
-          setTimeout(onSolved, 450);
+          setTimeout(() => onSolvedRef.current(), 450);
         }
       } else {
         setFlash("wrong");
-        onMistake();
+        onMistakeRef.current();
         const timer = setTimeout(() => {
           setFlash(null);
           setPickedLeft(null);
@@ -217,7 +226,7 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
         return () => clearTimeout(timer);
       }
     }
-  }, [pickedLeft, pickedRight, exercise.pairs, matched, onMistake, onSolved]);
+  }, [pickedLeft, pickedRight, exercise.pairs, matched, flash]);
 
   return (
     <div className="match-board">
@@ -226,7 +235,7 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
           const done = matched.includes(tile);
           const state = done ? "matched" : pickedLeft === tile ? (flash === "wrong" ? "wrong" : "picked") : "";
           return (
-            <button key={tile} type="button" className={`match-tile ${state}`} disabled={done} onClick={() => { setPickedLeft(tile); speak(tile, ttsLang); }}>
+            <button key={tile} type="button" className={`match-tile ${state}`} disabled={done || flash === "wrong"} onClick={() => { setPickedLeft(tile); speak(tile, ttsLang); }}>
               {tile}
             </button>
           );
@@ -238,7 +247,7 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
           const done = partner ? matched.includes(partner) : false;
           const state = done ? "matched" : pickedRight === tile ? (flash === "wrong" ? "wrong" : "picked") : "";
           return (
-            <button key={tile} type="button" className={`match-tile ${state}`} disabled={done} onClick={() => setPickedRight(tile)}>
+            <button key={tile} type="button" className={`match-tile ${state}`} disabled={done || flash === "wrong"} onClick={() => setPickedRight(tile)}>
               {tile}
             </button>
           );

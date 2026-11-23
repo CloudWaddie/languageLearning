@@ -30,8 +30,11 @@ function App() {
     setActiveLessonId(lesson.id);
   }
 
-  function finishLesson(xp: number, correct: number, total: number) {
+  function recordLesson(xp: number, correct: number, total: number) {
     if (activeLesson) completeLesson(course.id, activeLesson.id, xp, correct, total);
+  }
+
+  function exitLesson() {
     setActiveLessonId(null);
     setView("Learn");
   }
@@ -48,8 +51,8 @@ function App() {
         key={activeLesson.id}
         course={course}
         lesson={activeLesson}
-        onExit={() => setActiveLessonId(null)}
-        onFinished={finishLesson}
+        onExit={exitLesson}
+        onFinished={recordLesson}
       />
     );
   }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Heart, HeartCrack, PartyPopper, Trophy, X } from "lucide-react";
 import type { Course, Lesson } from "../data/courses";
 import {
@@ -37,6 +37,16 @@ export function LessonSession({ course, lesson, onExit, onFinished }: LessonSess
   const exercise = lesson.exercises[queue[position]];
   const progress = queue.length ? Math.round((position / queue.length) * 100) : 0;
   const xpEarned = useMemo(() => correctCount * 2 + 5, [correctCount]);
+  const reported = useRef(false);
+
+  // Persist the result the moment the lesson is done, so closing or reloading
+  // the results screen never loses the finished lesson.
+  useEffect(() => {
+    if (phase === "done" && !reported.current) {
+      reported.current = true;
+      onFinished(xpEarned, lesson.exercises.length - missed.length, lesson.exercises.length);
+    }
+  }, [phase, onFinished, xpEarned, missed.length, lesson.exercises.length]);
 
   function loseHeart() {
     setHearts((current) => current - 1);
@@ -111,7 +121,7 @@ export function LessonSession({ course, lesson, onExit, onFinished }: LessonSess
             <div><span className="end-stat-icon acc"><Check size={15} /></span><strong>{firstTry}/{total}</strong><small>first try</small></div>
             <div><span className="end-stat-icon hearts"><Heart size={15} fill="currentColor" /></span><strong>{hearts}</strong><small>hearts left</small></div>
           </div>
-          <button className="primary-action end-action" onClick={() => onFinished(xpEarned, firstTry, total)}>
+          <button className="primary-action end-action" onClick={onExit}>
             Continue
           </button>
         </div>

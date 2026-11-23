@@ -65,6 +65,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }
   }, [store]);
 
+  // Pick up writes from other tabs so this tab never overwrites their progress.
+  useEffect(() => {
+    function onStorage(event: StorageEvent) {
+      if (event.key === STORAGE_KEY) setStore(loadStore());
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const value = useMemo<ProgressContextValue>(
     () => ({
       store,

@@ -9,6 +9,7 @@ export function normalizeAnswer(text: string): string {
   return text
     .trim()
     .toLowerCase()
+    .replace(/[\u2018\u2019\u02BC`]/g, "'")
     .replace(/\s+/g, " ")
     .replace(/^[¿¡?!.,;:'"«»\s]+|[?!.,;:'"«»\s]+$/g, "");
 }
@@ -164,17 +165,23 @@ export function TypeAnswer({ exercise, value, onChange, revealed, onEnter }: Com
 }
 
 export function ListenChoice({ exercise, ttsLang, value, onChange, revealed }: CommonProps & { exercise: ListenExercise; ttsLang: string; value: number | null; onChange: (value: number) => void }) {
+  const [ttsAvailable] = useState(() => typeof window !== "undefined" && "speechSynthesis" in window);
+
   useEffect(() => {
-    speak(exercise.speak, ttsLang);
+    if (ttsAvailable) speak(exercise.speak, ttsLang);
     // Play once per exercise mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise.speak]);
 
   return (
     <div className="listen-choice">
-      <button type="button" className="listen-play" onClick={() => speak(exercise.speak, ttsLang)} aria-label="Play again">
-        <Volume2 size={30} />
-      </button>
+      {ttsAvailable ? (
+        <button type="button" className="listen-play" onClick={() => speak(exercise.speak, ttsLang)} aria-label="Play again">
+          <Volume2 size={30} />
+        </button>
+      ) : (
+        <p className="listen-fallback">No audio on this device — the phrase is: <strong>{exercise.speak}</strong></p>
+      )}
       <SelectOptions exercise={{ kind: "select", prompt: exercise.speak, options: exercise.options, answer: exercise.answer }} value={value} onChange={onChange} revealed={revealed} />
     </div>
   );
@@ -189,7 +196,7 @@ export function MatchBoard({ exercise, ttsLang, onMistake, onSolved }: { exercis
   const [flash, setFlash] = useState<"wrong" | null>(null);
 
   useEffect(() => {
-    if (pickedLeft && pickedRight) {
+    if (pickedLeft && pickedRight && !flash) {
       const isMatch = exercise.pairs.some(([target, base]) => target === pickedLeft && base === pickedRight);
       if (isMatch) {
         const next = [...matched, pickedLeft];

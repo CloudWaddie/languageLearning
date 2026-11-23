@@ -110,6 +110,8 @@
 .listen-play:hover { transform: translateY(-2px); }
 .listen-play:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--green-deep); }
 .listen-choice .option-list { width: 100%; }
+.listen-fallback { margin: 0; padding: 14px 18px; border-radius: 14px; background: var(--cream); border: 1px solid var(--line); color: var(--muted); font-size: 15px; text-align: center; }
+.listen-fallback strong { color: var(--ink); }
 
 .match-board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .match-column { display: grid; gap: 10px; align-content: start; }

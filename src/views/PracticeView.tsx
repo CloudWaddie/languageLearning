@@ -1,10 +1,13 @@
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { ArrowUpRight, Mic, Plus, Sparkles, Volume2 } from "lucide-react";
 import type { Course } from "../data/courses";
 import { speak } from "../lib/speech";
 
 type Role = "assistant" | "user";
-type Message = { id: number; role: Role; content: string; meta?: string };
+type Message = { id: number; role: Role; content: string; meta?: string; lang?: string };
+
+// Keep conversations alive across in-app navigation (module lives for the session).
+const chatCache = new Map<string, Message[]>();
 
 const QUICK_PROMPTS = ["Correct my sentence", "Explain this rule", "Give me a harder challenge"];
 
@@ -14,9 +17,10 @@ function coachGreeting(course: Course): Message[] {
       id: 1,
       role: "assistant",
       meta: `Luna · your ${course.name} conversation coach`,
+      lang: "en-US",
       content: `Hi! I'm Luna, your ${course.name} coach. Imagine a real scene — a café, a market, a train station — and just start talking in ${course.name}. I'll keep the conversation alive, notice your progress and explain little things along the way.`,
     },
-    { id: 2, role: "assistant", content: "To warm up: introduce yourself and say where you're from. Short answers are perfect." },
+    { id: 2, role: "assistant", lang: "en-US", content: "To warm up: introduce yourself and say where you're from. Short answers are perfect." },
   ];
 }
 
@@ -32,9 +36,13 @@ function buildDemoReply(input: string, course: Course): string {
 }
 
 export function PracticeView({ course }: { course: Course }) {
-  const [messages, setMessages] = useState<Message[]>(() => coachGreeting(course));
+  const [messages, setMessages] = useState<Message[]>(() => chatCache.get(course.id) ?? coachGreeting(course));
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    chatCache.set(course.id, messages);
+  }, [course.id, messages]);
 
   async function sendMessage(rawMessage: string) {
     const content = rawMessage.trim();
@@ -59,9 +67,9 @@ export function PracticeView({ course }: { course: Course }) {
       if (!response.ok) throw new Error("AI route unavailable");
       const data = (await response.json()) as { message?: string };
       if (!data.message) throw new Error("Empty AI response");
-      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: data.message! }]);
+      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", lang: course.ttsLang, content: data.message! }]);
     } catch {
-      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: buildDemoReply(content, course) }]);
+      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", lang: "en-US", content: buildDemoReply(content, course) }]);
     } finally {
       setIsSending(false);
     }
@@ -83,7 +91,7 @@ export function PracticeView({ course }: { course: Course }) {
       </div>
 
       <div className="conversation-scroll">
-        {messages.map((message) => <MessageBubble key={message.id} message={message} onSpeak={() => speak(message.content, message.role === "assistant" ? course.ttsLang : "en-US")} />)}
+        {messages.map((message) => <MessageBubble key={message.id} message={message} onSpeak={() => speak(message.content, message.lang ?? course.ttsLang)} />)}
         {isSending && <div className="message-row assistant-row"><div className="coach-avatar"><Sparkles size={15} /></div><div className="typing-bubble"><span /><span /><span /></div></div>}
       </div>
 
